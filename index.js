@@ -18,26 +18,40 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
-  const addedCollection = client
-    .db("Gadget_City")
-    .collection("SmartWatchCollection");
+  try {
+    const SmartWatchCollection = client
+      .db("Gadget_City")
+      .collection("SmartWatchCollection");
 
-  app.get("/products/:category", async (req, res) => {
-    const category = req.params.category;
-    const query = { category: category };
-    const result = await SmartWatchCollection.find(query).toArray();
-    res.send(result);
-  });
+    const CategoryCollection = client
+      .db("Gadget_City")
+      .collection("CategoryCollection");
 
-  // app.get("/:category", async (req, res) => {
+    app.get("/watches", async (req, res) => {
+      const query = {};
+      const cursor = SmartWatchCollection.find(query);
+      const watches = await cursor.toArray();
+      res.send(watches);
+    });
+
+    app.get("/category", async (req, res) => {
+      const query = {};
+      const cursor = CategoryCollection.find(query);
+      const category = await cursor.toArray();
+      res.send(category);
+    });
+  } finally {
+  }
+
+  // app.get("/products/:category", async (req, res) => {
   //   const category = req.params.category;
   //   const query = { category: category };
-  //   const result = await SmartWatchCollection.findOne(query);
+  //   const result = await SmartWatchCollection.find(query).toArray();
   //   res.send(result);
   // });
 }
 
-run().catch(console.log);
+run().catch((e) => console.error("errorrrr  : " + e));
 
 app.get("/", (req, res) => {
   res.send("hello from gadget city server");
